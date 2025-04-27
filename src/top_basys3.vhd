@@ -45,7 +45,16 @@ end top_basys3;
 architecture top_basys3_arch of top_basys3 is 
   
 	-- COMPONENTS----------------------------------
-	-- CPU cycle FSM
+	-- Button Debounce...CPU cycle FSM is manually clocked by btnC on Basys board
+    component button_debounce is
+        Port(	clk: in  STD_LOGIC;
+                reset : in  STD_LOGIC;
+                button: in STD_LOGIC;
+                action: out STD_LOGIC
+        );
+    end component button_debounce;
+    
+    -- CPU cycle FSM
     component controller_fsm is
         Port ( i_reset : in STD_LOGIC;
                i_adv : in STD_LOGIC;
@@ -107,25 +116,36 @@ architecture top_basys3_arch of top_basys3 is
 
 
     -- SIGNALS -------------------------------------------
+    signal w_adv : std_logic;                            -- signal from btnC to button_debounce
     signal w_cycle : std_logic_vector (3 downto 0);
     signal w_A : std_logic_vector (7 downto 0);
     signal w_B : std_logic_vector (7 downto 0);
     signal w_ALU_result : std_logic_vector (7 downto 0);
     signal w_ALU_mux : std_logic_vector (7 downto 0);
     signal w_slow_clk : std_logic;
-    signal w_sign : std_logic;                            -- neg sign (if needed)
+    signal w_sign : std_logic;                            -- controls mux passing neg or no sign to TDM4 input
     signal w_hundreds : std_logic_vector (3 downto 0);    -- digit in hundreds place
     signal w_tens : std_logic_vector (3 downto 0);        -- digit in tens place
     signal w_ones : std_logic_vector (3 downto 0);        --digit in ones place
     signal w_TDM_data: std_logic_vector (3 downto 0);
     signal w_TDM_sel : std_logic_vector (3 downto 0);
+    signal w_seg : std_logic_vector (6 downto 0);         -- 7SD value
+    signal w_7SD_out : std_logic_vector (6 downto 0);     -- output from 7SD deocder
   
 begin
 	-- PORT MAPS ----------------------------------------
+    -- Button Debounce
+    button_debounce_inst : button_debounce
+        Port Map(   clk => clk,
+                    reset => btnU,
+                    button => btnC,
+                    action => w_adv
+         );
+         
     -- CPU cycle FSM
     controller_fsm_inst : controller_fsm
         Port Map (  i_reset => btnU,
-                    i_adv => btnC,
+                    i_adv => w_adv,
                     o_cycle => w_cycle
         );
     
@@ -133,14 +153,14 @@ begin
     ALU_inst : ALU
         Port Map (  i_A => w_A,
                     i_B => w_B,
-                    i_op => sw (15 downto 13),   -- ADD "000", SUB "001", AND "010", OR "011"
+                    i_op => sw (2 downto 0),   -- ADD "000", SUB "001", AND "010", OR "011"
                     o_result => w_ALU_result,
                     o_flags => led (15 downto 12)   -- N Z C V
         );
     
     -- Drives TDM...set to 4KHz (k_DIV = 12500)
     clock_divider_inst : clock_divider
-        generic map (k_DIV => 0) --12500)              -- How many clk cycles until slow clock toggles
+        generic map (k_DIV => 12500)              -- How many clk cycles until slow clock toggles
                                                    -- Effectively, you divide the clk double this 
                                                    -- number (e.g., k_DIV := 2 --> clock divider of 4)
         port map (  i_clk => clk,
@@ -163,18 +183,21 @@ begin
 	    generic map(k_WIDTH => 4) -- bits in input and output
         Port Map (  i_clk => w_slow_clk,
                     i_reset	=> '0', -- asynchronous
-                    i_D3 => "0000", -- NEED TO UPDATE THIS WITH NEGATIVE SIGN SOMEHOW
+                    i_D3 => "0000",  -- grounding inputs to i_D3, but will never be used...
+                                     -- the value passed to 7SD(3) on the Basys board will come from
+                                     -- mux after 7SD decoder (to account for '-' not being a decodable 
+                                     -- character in 7SD decoder.
                     i_D2 => w_hundreds,
                     i_D1 => w_tens,
                     i_D0 => w_ones,
                     o_data => w_TDM_data,
-                    o_sel => an
+                    o_sel => w_TDM_sel
         );
     
     -- 7S Decoder
     sevenseg_decoder_inst : sevenseg_decoder
         Port Map (  i_Hex => w_TDM_data,
-                    o_seg_n => seg
+                    o_seg_n => w_7SD_out
         );
 
 	
@@ -183,7 +206,19 @@ begin
 	              w_B          when w_cycle = "0100" else
 	              w_ALU_result when w_cycle = "1000" else
 	              x"00";
-	
+	              
+    w_seg <=    "0111111" when ((w_sign = '1') and (w_TDM_sel(3) = '0')) else
+                "1111111" when ((w_sign = '0') and (w_TDM_sel(3) = '0')) else
+                w_7SD_out;
+                
+    seg <= w_seg;          
+                
+    an <=   "1111"  when w_cycle = "0001" else
+            w_TDM_sel;
+            
+    led (3 downto 0) <= w_cycle; 
+    led (11 downto 4) <= (others => '0');       
+
 	-- PROCESSES ----------------------------------------
 	i_A_state_register : process(w_cycle(1))
 	begin

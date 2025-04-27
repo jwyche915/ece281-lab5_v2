@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<wave_config>
+   <wave_state>
+   </wave_state>
+   <db_ref_list>
+      <db_ref path="top_basys3_tb_behav.wdb" id="1">
+         <top_modules>
+            <top_module name="top_basys3_tb" />
+         </top_modules>
+      </db_ref>
+   </db_ref_list>
+   <zoom_setting>
+      <ZoomStartTime time="0.000000000 ms"></ZoomStartTime>
+      <ZoomEndTime time="500.000000001 ms"></ZoomEndTime>
+      <Cursor1Time time="180.000085000 ms"></Cursor1Time>
+   </zoom_setting>
+   <column_width_setting>
+      <NameColumnWidth column_width="191"></NameColumnWidth>
+      <ValueColumnWidth column_width="116"></ValueColumnWidth>
+   </column_width_setting>
+   <WVObjectSize size="12" />
+   <wvobject fp_name="/top_basys3_tb/w_clk" type="logic">
+      <obj_property name="ElementShortName">w_clk</obj_property>
+      <obj_property name="ObjectShortName">w_clk</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/w_sw" type="array">
+      <obj_property name="ElementShortName">w_sw[15:0]</obj_property>
+      <obj_property name="ObjectShortName">w_sw[15:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/w_btnU" type="logic">
+      <obj_property name="ElementShortName">w_btnU</obj_property>
+      <obj_property name="ObjectShortName">w_btnU</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/w_btnC" type="logic">
+      <obj_property name="ElementShortName">w_btnC</obj_property>
+      <obj_property name="ObjectShortName">w_btnC</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/top_basys3_inst/w_adv" type="logic">
+      <obj_property name="ElementShortName">w_adv</obj_property>
+      <obj_property name="ObjectShortName">w_adv</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/w_led" type="array">
+      <obj_property name="ElementShortName">w_led[15:0]</obj_property>
+      <obj_property name="ObjectShortName">w_led[15:0]</obj_property>
+      <obj_property name="isExpanded"></obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/w_seg" type="array">
+      <obj_property name="ElementShortName">w_seg[6:0]</obj_property>
+      <obj_property name="ObjectShortName">w_seg[6:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/w_an" type="array">
+      <obj_property name="ElementShortName">w_an[3:0]</obj_property>
+      <obj_property name="ObjectShortName">w_an[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/top_basys3_inst/w_sign" type="logic">
+      <obj_property name="ElementShortName">w_sign</obj_property>
+      <obj_property name="ObjectShortName">w_sign</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/top_basys3_inst/w_hundreds" type="array">
+      <obj_property name="ElementShortName">w_hundreds[3:0]</obj_property>
+      <obj_property name="ObjectShortName">w_hundreds[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/top_basys3_inst/w_tens" type="array">
+      <obj_property name="ElementShortName">w_tens[3:0]</obj_property>
+      <obj_property name="ObjectShortName">w_tens[3:0]</obj_property>
+   </wvobject>
+   <wvobject fp_name="/top_basys3_tb/top_basys3_inst/w_ones" type="array">
+      <obj_property name="ElementShortName">w_ones[3:0]</obj_property>
+      <obj_property name="ObjectShortName">w_ones[3:0]</obj_property>
+   </wvobject>
+</wave_config>
